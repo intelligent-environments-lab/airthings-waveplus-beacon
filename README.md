@@ -1,5 +1,14 @@
 # Airthings Wave Plus Sensor Reader
 
+* Forked from https://github.com/Airthings/waveplus-reader*
+* updated to use python3 and write to a json file so it can be used to display data to homebridge via plugin.
+
+
+
+
+
+
+
 This is a project to provide users an interface (```read_waveplus.py```) to read current sensor values from the
 [Airthings Wave Plus](https://airthings.com/wave-plus/) devices using a Raspberry Pi 3 
 Model B over Bluetooth Low Energy (BLE).
