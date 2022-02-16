@@ -1,3 +1,7 @@
+
+![License: MIT](https://img.shields.io/github/license/intelligent-environments-lab/airthings-waveplus-beacon?style=plastic)
+![GitHub top language](https://img.shields.io/github/languages/top/intelligent-environments-lab/airthings-waveplus-beacon?style=plastic)
+
 # Airthings Wave Plus Sensor Beacon and Reader
 This repo helps get around the use of the AirThings Hub to collect data from AirThings WavePlus sensors.
 
