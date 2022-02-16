@@ -1,7 +1,8 @@
-# Airthings Wave Plus Sensor Reader
+# Airthings Wave Plus Sensor Beacon and Reader
+This repo helps get around the use of the AirThings Hub to collect data from AirThings WavePlus sensors.
 
-* Forked from https://github.com/Airthings/waveplus-reader*
-* updated to use python3 and write to a json file so it can be used to display data to homebridge via plugin.
+* Forked from https://github.com/kogant/waveplus-reader
+* Formalized into a more user-friendly package
 
 
 * Prereqs
