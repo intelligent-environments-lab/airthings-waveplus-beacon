@@ -27,3 +27,7 @@ sudo apt-get install tailscale
 
 # Set up locale, timezone, language
 sudo timedatectl set-timezone US/Central
+
+# Python Packages for Script
+sudo pip3 install pandas
+sudo pip3 install numpy
