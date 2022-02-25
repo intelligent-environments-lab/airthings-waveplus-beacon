@@ -31,17 +31,21 @@ from bluepy.btle import UUID, Peripheral, Scanner, DefaultDelegate
 import sys
 import time
 import struct
-import json, codecs
 import os.path
+import logging
 
 from datetime import datetime
 import pandas as pd
+import numpy as np
 
 # ====================================
-# Utility functions for WavePlus class
+# Utility functions
 # ====================================
 
 def parseSerialNumber(ManuDataHexStr):
+    """
+    Parses the serial number from a hex string
+    """
     if (ManuDataHexStr == "None"):
         SN = "Unknown"
     else:
@@ -55,6 +59,21 @@ def parseSerialNumber(ManuDataHexStr):
         else:
             SN = "Unknown"
     return SN
+
+def get_error_data():
+    """
+    Returns NaN data for each sensor
+    """
+    data = {
+        "humidity": [np.nan],
+        "radon_st_avg": [np.nan],
+        "radon_lt_avg": [np.nan],
+        "temperature": [np.nan],
+        "pressure": [np.nan],
+        "CO2_lvl": [np.nan],
+        "VOC_lvl": [np.nan]
+    }
+    return data
 
 # ===============================
 # Class WavePlus
@@ -87,27 +106,7 @@ class WavePlus():
                     break # exit for loop
             
             if (self.MacAddr is None):
-                print("ERROR: Could not find device.")
-                print("GUIDE: (1) Please verify the serial number.")
-                print("       (2) Ensure that the device is advertising.")
-                print("       (3) Retry connection.")
-                print("       (4) Try putting the device closer")
-                if (os.path.isfile('/tmp/airthingswave.status.json')):
-                    print("Temporary could not connect")
-                else:
-                    # create temp file
-                    data = {
-		           "humidity": 0,
-		           "radon_st_avg": 0,
-		           "radon_lt_avg": 0,
-		           "temperature": 0,
-		           "pressure": 0,
-		           "CO2_lvl": 0,
-		           "VOC_lvl": 0
-		     }
-                    with open('/tmp/airthingswave.status.json', 'wb') as f:
-                        json.dump(data, codecs.getwriter('utf-8')(f), sort_keys = True, indent = 4, ensure_ascii=False)
-                sys.exit(1)
+                raise NameError("Could not find device")
         
         # Connect to device
         if (self.periph is None):
@@ -117,8 +116,7 @@ class WavePlus():
         
     def read(self):
         if (self.curr_val_char is None):
-            print("ERROR: Devices are not connected.")
-            sys.exit(1)            
+            raise NameError("Devices are not connected")          
         rawdata = self.curr_val_char.read()
         rawdata = struct.unpack('BBBBHHHHHHHH', rawdata)
         sensors = Sensors()
@@ -148,7 +146,7 @@ class Sensors():
     def __init__(self):
         self.sensor_version = None
         self.sensor_data    = [None]*NUMBER_OF_SENSORS
-        self.sensor_units   = ["%rH", "Bq/m3", "Bq/m3", "degC", "hPa", "ppm", "ppb"]
+        self.sensor_units   = ["%", "Bq/m3", "Bq/m3", "degC", "hPa", "ppm", "ppb"]
     
     def set(self, rawData):
         self.sensor_version = rawData[0]
@@ -163,7 +161,7 @@ class Sensors():
         else:
             print("ERROR: Unknown sensor version.\n")
             print("GUIDE: Contact Airthings for support.\n")
-            sys.exit(1)
+            sys.exit(1) # keeping this error because it seems necessary
    
     def conv2radon(self, radon_raw):
         radon = "N/A" # Either invalid measurement, or not available
@@ -181,51 +179,67 @@ def main(SerialNumber):
     """
     Main function
     """
+    log = setup_logger(logging.INFO)
+    waveplus = WavePlus(SerialNumber)
+    log.info("Created AirThings Object")
+    log.info(f"Serial Number: {SerialNumber}")
     starttime = time.time()  # Used for preventing time drift
     while True:
         date = datetime.now()
         start_time = time.time()  # Used for evaluating scan cycle time performance
         try:
-            #---- Initialize ----#
-            waveplus = WavePlus(SerialNumber)
-            waveplus.connect()
-                # read values
-            sensors = waveplus.read()
-                # extract
-            humidity     = str(sensors.getValue(SENSOR_IDX_HUMIDITY))
-            radon_st_avg = str(sensors.getValue(SENSOR_IDX_RADON_SHORT_TERM_AVG))
-            radon_lt_avg = str(sensors.getValue(SENSOR_IDX_RADON_LONG_TERM_AVG))
-            temperature  = str(sensors.getValue(SENSOR_IDX_TEMPERATURE))
-            pressure     = str(sensors.getValue(SENSOR_IDX_REL_ATM_PRESSURE))
-            CO2_lvl      = str(sensors.getValue(SENSOR_IDX_CO2_LVL))
-            VOC_lvl      = str(sensors.getValue(SENSOR_IDX_VOC_LVL))
-        #	print humidity, temperature, pressure, radon_st_avg, radon_lt_avg, CO2_lvl, VOC_lvl, "done"
+            #---- Connect ----#
+            try:
+                waveplus.connect()
+                log.info("Connected to AirThings")
+                log.info("----------------------")
+            except NameError as e:
+                log.warning(e)
+                # create temp file
+                data = get_error_data()
+                
+            #---- Read ----#
+            try:
+                sensors = waveplus.read()
 
-            # Print data
-            data = {
-                "humidity": [humidity],
-                "radon_st_avg": [radon_st_avg],
-                "radon_lt_avg": [radon_lt_avg],
-                "temperature": [temperature],
-                "pressure": [pressure],
-                "CO2_lvl": [CO2_lvl],
-                "VOC_lvl": [VOC_lvl]
-                }
+                humidity     = str(sensors.getValue(SENSOR_IDX_HUMIDITY))
+                radon_st_avg = str(sensors.getValue(SENSOR_IDX_RADON_SHORT_TERM_AVG))
+                radon_lt_avg = str(sensors.getValue(SENSOR_IDX_RADON_LONG_TERM_AVG))
+                temperature  = str(sensors.getValue(SENSOR_IDX_TEMPERATURE))
+                pressure     = str(sensors.getValue(SENSOR_IDX_REL_ATM_PRESSURE))
+                CO2_lvl      = str(sensors.getValue(SENSOR_IDX_CO2_LVL))
+                VOC_lvl      = str(sensors.getValue(SENSOR_IDX_VOC_LVL))
+
+                data = {
+                    "humidity": [humidity],
+                    "radon_st_avg": [radon_st_avg],
+                    "radon_lt_avg": [radon_lt_avg],
+                    "temperature": [temperature],
+                    "pressure": [pressure],
+                    "CO2_lvl": [CO2_lvl],
+                    "VOC_lvl": [VOC_lvl]
+                    }
+            except NameError as e:
+                log.warning(e)
+                # create temp file
+                data = get_error_data()
+
+            # convert to dataframe and output to log
+            df = pd.DataFrame(data)
+            log.info(df)
             
             # Write data to csv file
             filename = f'/home/pi/DATA/{SerialNumber}-{date.strftime("%Y-%m-%d")}.csv'
-            df = pd.DataFrame(data)
             try:
                 if os.path.isfile(filename):
                     df.to_csv(filename, mode="a", header=False)
-                    print(f"Data appended to {filename}")
+                    log.info(f"Data appended to {filename}")
                 else:
                     # create file locally
                     df.to_csv(filename)
-                    print(f"Data written to {filename}")
+                    log.info(f"Data written to {filename}")
             except Exception as e:
-                pass
-                #log.warning(e)
+                log.warning(e)
 
         finally:
             waveplus.disconnect()
@@ -237,9 +251,32 @@ def main(SerialNumber):
         # Make sure that interval between scans is exactly 60 seconds
         time.sleep(60.0 - ((time.time() - starttime) % 60.0))
 
+def setup_logger(level=logging.WARNING):
+    """
+    logging setup for standard and file output
+    """
+    log = logging.getLogger(__name__)
+    log.setLevel(logging.INFO)
+    log.propagate = False # lower levels are not propogated to children
+    if log.hasHandlers():
+        log.handlers.clear()
+    # stream output
+    sh = logging.StreamHandler(stream=sys.stdout)
+    sh.setLevel(logging.DEBUG)
+    sh_format = logging.Formatter("%(message)s")
+    sh.setFormatter(sh_format)
+    log.addHandler(sh)
+    # file output
+    f = logging.FileHandler("sensors.log")
+    f.setLevel(logging.DEBUG)
+    f_format = logging.Formatter("%(asctime)s - %(levelname)s\n%(message)s")
+    f.setFormatter(f_format)
+    log.addHandler(f)
+    return log
+
 if __name__ == "__main__":
     """
-    Generates report
+    Connects to and gathers data from the AirThings device
     """
     SerialNumber = int(sys.argv[1])
     main(SerialNumber)
