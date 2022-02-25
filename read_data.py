@@ -181,10 +181,10 @@ def main(SerialNumber):
     """
     log = setup_logger(logging.INFO)
     waveplus = WavePlus(SerialNumber)
-    log.info("-------------------------------------------------------------------------")
+    log.info("--------------------------------------------------------------------------------------")
     log.info("Created AirThings Object")
     log.info(f"Serial Number: {SerialNumber}")
-    log.info("-------------------------------------------------------------------------")
+    log.info("--------------------------------------------------------------------------------------")
     starttime = time.time()  # Used for preventing time drift
     while True:
         date = datetime.now()
@@ -194,7 +194,7 @@ def main(SerialNumber):
             try:
                 waveplus.connect()
                 log.info("Connected to AirThings")
-                log.info("-------------------------------------------------------------------------")
+                log.info("--------------------------------------------------------------------------------------")
             except NameError as e:
                 log.warning(e)
                 # create temp file
@@ -230,7 +230,7 @@ def main(SerialNumber):
             # convert to dataframe and output to log
             df = pd.DataFrame(data).set_index("timestamp")
             log.info(df)
-            log.info("-------------------------------------------------------------------------")
+            log.info("--------------------------------------------------------------------------------------")
             
             # Write data to csv file
             filename = f'/home/pi/DATA/{SerialNumber}-{date.strftime("%Y-%m-%d")}.csv'
@@ -250,11 +250,11 @@ def main(SerialNumber):
 
         # Report cycle time for performance evaluation by user
         elapsed_time = time.time() - cylce_start_time
-        log.info(f"Cycle Time: {round(elapsed_time,2)} seconds")
+        log.info(f"Cycle Time:\t{round(elapsed_time,2)} seconds")
 
         # Make sure that interval between scans is exactly 60 secondss
-        log.info(f"Sleeping: {round(60.0 - ((time.time() - starttime) % 60.0),2)} seconds")
-        log.info("-------------------------------------------------------------------------\n")
+        log.info(f"Sleeping:\t{round(60.0 - ((time.time() - starttime) % 60.0),2)} seconds")
+        log.info("--------------------------------------------------------------------------------------\n")
         time.sleep(60.0 - ((time.time() - starttime) % 60.0))
 
 def setup_logger(level=logging.WARNING):
