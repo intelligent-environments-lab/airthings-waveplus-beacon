@@ -213,6 +213,7 @@ def main(SerialNumber):
                 VOC_lvl      = str(sensors.getValue(SENSOR_IDX_VOC_LVL))
 
                 data = {
+                    "timestamp": [date.strftime('%Y-%m-%d %H:%M:%S')],
                     "humidity": [humidity],
                     "radon_st_avg": [radon_st_avg],
                     "radon_lt_avg": [radon_lt_avg],
@@ -227,8 +228,6 @@ def main(SerialNumber):
                 data = get_error_data()
 
             # convert to dataframe and output to log
-            timestamp = pd.Series({"Timestamp": date.strftime("%Y-%m-%d %H:%M:%S")})
-            df = pd.concat([timestamp, *data.values()]).to_frame().T.set_index("Timestamp")
             df = pd.DataFrame(data)
             log.info("Data\n-------------------------------------------------------------------------")
             log.info(df)
