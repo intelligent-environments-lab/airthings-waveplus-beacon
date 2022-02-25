@@ -228,8 +228,7 @@ def main(SerialNumber):
                 data = get_error_data()
 
             # convert to dataframe and output to log
-            df = pd.DataFrame(data)
-            log.info("Data\n-------------------------------------------------------------------------")
+            df = pd.DataFrame(data).set_index("timestamp")
             log.info(df)
             log.info("-------------------------------------------------------------------------")
             
