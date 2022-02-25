@@ -188,7 +188,7 @@ def main(SerialNumber):
     starttime = time.time()  # Used for preventing time drift
     while True:
         date = datetime.now()
-        start_time = time.time()  # Used for evaluating scan cycle time performance
+        cylce_start_time = time.time()  # Used for evaluating scan cycle time performance
         try:
             #---- Connect ----#
             try:
@@ -214,13 +214,13 @@ def main(SerialNumber):
 
                 data = {
                     "timestamp": [date.strftime('%Y-%m-%d %H:%M:%S')],
-                    "humidity": [humidity],
-                    "radon_st_avg": [radon_st_avg],
-                    "radon_lt_avg": [radon_lt_avg],
+                    "rh": [humidity],
+                    "radon_acute": [radon_st_avg],
+                    "radon_chronic": [radon_lt_avg],
                     "temperature": [temperature],
                     "pressure": [pressure],
-                    "CO2_lvl": [CO2_lvl],
-                    "VOC_lvl": [VOC_lvl]
+                    "co2": [CO2_lvl],
+                    "voc": [VOC_lvl]
                     }
             except NameError as e:
                 log.warning(e)
@@ -249,7 +249,7 @@ def main(SerialNumber):
             waveplus.disconnect()
 
         # Report cycle time for performance evaluation by user
-        elapsed_time = time.time() - start_time
+        elapsed_time = time.time() - cylce_start_time
         log.info(f"Cycle Time: {round(elapsed_time,2)} seconds")
 
         # Make sure that interval between scans is exactly 60 secondss
