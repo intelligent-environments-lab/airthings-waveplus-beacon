@@ -65,6 +65,7 @@ def get_error_data():
     Returns NaN data for each sensor
     """
     data = {
+        "timestamp": [datetime.now().strftime('%Y-%m-%d %H:%M:%S')],
         "humidity": [np.nan],
         "radon_st_avg": [np.nan],
         "radon_lt_avg": [np.nan],
