@@ -203,13 +203,13 @@ def main(SerialNumber):
 
             # Print data
             data = {
-                "humidity": humidity,
-                "radon_st_avg": radon_st_avg,
-                "radon_lt_avg": radon_lt_avg,
-                "temperature": temperature,
-                "pressure": pressure,
-                "CO2_lvl": CO2_lvl,
-                "VOC_lvl": VOC_lvl
+                "humidity": [humidity],
+                "radon_st_avg": [radon_st_avg],
+                "radon_lt_avg": [radon_lt_avg],
+                "temperature": [temperature],
+                "pressure": [pressure],
+                "CO2_lvl": [CO2_lvl],
+                "VOC_lvl": [VOC_lvl]
                 }
             
             # Write data to csv file
