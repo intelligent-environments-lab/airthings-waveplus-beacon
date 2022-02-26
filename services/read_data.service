@@ -1,0 +1,10 @@
+[Unit]
+Description=Starts reading data from AirThing
+
+[Service]
+ExecStart = sudo python3 /home/pi/airthings-waveplus-beacon/src/read_data.py
+Restart=always
+RestartSec=60s
+
+[Install]
+WantedBy=multi-user.target
