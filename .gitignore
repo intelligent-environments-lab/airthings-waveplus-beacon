@@ -1,0 +1,18 @@
+# Annoying file types
+*DS_Store*
+*.pyc
+
+# Annoying directories
+*pycache*
+
+# BIG files
+*.mp4
+*.pptx
+*.ppt
+.vscode/
+
+# Virtual Environemnts
+*.venv*
+
+# log files
+*.log
