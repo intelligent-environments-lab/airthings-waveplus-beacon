@@ -36,7 +36,7 @@
 # ===============================
 
 from xml.dom.minidom import parseString
-from bluepy.btle import UUID, Peripheral, Scanner, DefaultDelegate
+from bluepy.btle import UUID, Peripheral, Scanner, DefaultDelegate, BTLEManagementError
 import sys
 import time
 import struct
@@ -204,6 +204,10 @@ def main(SerialNumber):
                 log.info("Connected to AirThings")
                 log.info("--------------------------------------------------------------------------------------")
             except NameError as e:
+                log.warning(e)
+                # create temp file
+                data = get_error_data()
+            except BTLEManagementError as e:
                 log.warning(e)
                 # create temp file
                 data = get_error_data()
