@@ -29,5 +29,6 @@ sudo apt-get install tailscale
 sudo timedatectl set-timezone US/Central
 
 # Python Packages for Script
+sudo apt-get install -y libatlas-base-dev #for numpy
 sudo pip3 install pandas
 sudo pip3 install numpy
