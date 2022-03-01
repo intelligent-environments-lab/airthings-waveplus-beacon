@@ -21,6 +21,15 @@
 # SOFTWARE.
 #
 # https://airthings.com
+# 
+# This software has been modified from its original condition by researchers within
+# the Intelligent Environments Lab at the University of Texas at Austin, namely:
+# * Hagen Fritz
+# * Angelina Ibarra
+# * Kyle Sanchez
+#
+# If you have questions, please visit the associated GitHub page: 
+# https://github.com/intelligent-environments-lab/airthings-waveplus-beacon/
 
 # ===============================
 # Module import dependencies
@@ -66,13 +75,13 @@ def get_error_data():
     """
     data = {
         "timestamp": [datetime.now().strftime('%Y-%m-%d %H:%M:%S')],
-        "humidity": [np.nan],
-        "radon_st_avg": [np.nan],
-        "radon_lt_avg": [np.nan],
+        "rh": [np.nan],
+        "radon_acute": [np.nan],
+        "radon_chronic": [np.nan],
         "temperature": [np.nan],
         "pressure": [np.nan],
-        "CO2_lvl": [np.nan],
-        "VOC_lvl": [np.nan]
+        "co2": [np.nan],
+        "voc": [np.nan]
     }
     return data
 
@@ -107,7 +116,7 @@ class WavePlus():
                     break # exit for loop
             
             if (self.MacAddr is None):
-                raise NameError("Could not find device")
+                raise NameError("CONNECTION ERROR: Could not find device")
         
         # Connect to device
         if (self.periph is None):
@@ -117,7 +126,7 @@ class WavePlus():
         
     def read(self):
         if (self.curr_val_char is None):
-            raise NameError("Devices are not connected")          
+            raise NameError("READ ERROR: Devices are not connected")          
         rawdata = self.curr_val_char.read()
         rawdata = struct.unpack('BBBBHHHHHHHH', rawdata)
         sensors = Sensors()
@@ -160,9 +169,7 @@ class Sensors():
             self.sensor_data[SENSOR_IDX_CO2_LVL]              = rawData[8]*1.0
             self.sensor_data[SENSOR_IDX_VOC_LVL]              = rawData[9]*1.0
         else:
-            print("ERROR: Unknown sensor version.\n")
-            print("GUIDE: Contact Airthings for support.\n")
-            sys.exit(1) # keeping this error because it seems necessary
+            raise NameError("VERSION ERROR: Unknown sensor version.\n")
    
     def conv2radon(self, radon_raw):
         radon = "N/A" # Either invalid measurement, or not available
