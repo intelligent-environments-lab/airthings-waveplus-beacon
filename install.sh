@@ -27,6 +27,7 @@ sudo apt-get install tailscale
 
 # Set up locale, timezone, language
 sudo timedatectl set-timezone US/Central
+git config pull.rebase false
 
 # Python Packages for Script
 sudo apt-get install -y libatlas-base-dev #for numpy
