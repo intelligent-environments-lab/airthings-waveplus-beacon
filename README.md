@@ -10,10 +10,10 @@ This inspiration for this project was to help remove the need for an AirThings H
 
 _This repository was forked from https://github.com/kogant/waveplus-reader_
 
-Data are collected via a Python script ```[read_data.py](https://github.com/intelligent-environments-lab/airthings-waveplus-beacon/blob/master/src/read_data.py)``` that, once executed, runs indefinitely collecting data at 1-minute intervals and appending these data to a locally-stored daily CSV file within in the ```/home/pi/DATA``` directory. 
+Data are collected via a Python script [read_data.py](https://github.com/intelligent-environments-lab/airthings-waveplus-beacon/blob/master/src/read_data.py) that, once executed, runs indefinitely collecting data at 1-minute intervals and appending these data to a locally-stored daily CSV file within in the ```/home/pi/DATA``` directory. 
 
 ### Necessary Libraries
-The libraries needed to run this project as intended are listed in the ```[install.sh](https://github.com/intelligent-environments-lab/airthings-waveplus-beacon/blob/master/install.sh)``` script, but we highlight some of the more important ones below:
+The libraries needed to run this project as intended are listed in the [install.sh](https://github.com/intelligent-environments-lab/airthings-waveplus-beacon/blob/master/install.sh) script, but we highlight some of the more important ones below:
 * python 3.7+
 * pip3
 * bluepy
