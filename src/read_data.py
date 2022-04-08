@@ -120,7 +120,10 @@ class WavePlus():
         
         # Connect to device
         if (self.periph is None):
-            self.periph = Peripheral(self.MacAddr)
+            try:
+                self.periph = Peripheral(self.MacAddr)
+            except Exception as e:
+                self.periph = None
         if (self.curr_val_char is None):
             self.curr_val_char = self.periph.getCharacteristics(uuid=self.uuid)[0]
         
@@ -203,15 +206,11 @@ def main(SerialNumber):
                 waveplus.connect()
                 log.info("Connected to AirThings")
                 log.info("--------------------------------------------------------------------------------------")
-            except NameError as e:
+            except (NameError, BTLEManagementError, BTLEDisconnectError) as e:
                 log.warning(e)
                 # create temp file
                 data = get_error_data()
-            except BTLEManagementError as e:
-                log.warning(e)
-                # create temp file
-                data = get_error_data()
-            except BTLEDisconnectError as e:
+            except Exception as e:
                 log.warning(e)
                 # create temp file
                 data = get_error_data()
