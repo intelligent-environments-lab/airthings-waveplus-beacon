@@ -16,7 +16,7 @@ sudo pip3 install bluepy
 chmod +x /usr/local/lib/python3.7/dist-packages/bluepy/bluepy-helper
 
 # Reboot - might need this in case we encounter any issues
-#sudo /bin/bash -c 'echo "59 23 * * * root sh /home/pi/bevo_iaq/reboot.sh" >> /etc/crontab'
+sudo /bin/bash -c 'echo "59 23 * * * root sh /home/pi/airthings-waveplus-beacon/services/reboot.sh" >> /etc/crontab'
 
 # VPN
 sudo apt-get install apt-transport-https
