@@ -267,10 +267,11 @@ def main(SerialNumber):
         elapsed_time = time.time() - cylce_start_time
         log.info(f"Cycle Time:\t{round(elapsed_time,2)} seconds")
 
-        # Make sure that interval between scans is exactly 60 secondss
-        log.info(f"Sleeping:\t{round(60.0 - ((time.time() - starttime) % 60.0),2)} seconds")
+        # Make sure that interval between scans is exactly 300 secondss
+        log.info(f"Sleeping:\t{round(300.0 - ((time.time() - starttime) % 60.0),2)} seconds")
         log.info("--------------------------------------------------------------------------------------\n")
-        time.sleep(60.0 - ((time.time() - starttime) % 60.0))
+        waveplus.disconnect() # suggested to disconnect
+        time.sleep(300.0 - ((time.time() - starttime) % 60.0))
 
 def setup_logger(level=logging.WARNING):
     """
