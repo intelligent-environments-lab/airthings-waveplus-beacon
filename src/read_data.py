@@ -81,7 +81,8 @@ def get_error_data():
         "temperature": [np.nan],
         "pressure": [np.nan],
         "co2": [np.nan],
-        "voc": [np.nan]
+        "voc": [np.nan],
+        "battery": [np.nan]
     }
     return data
 
@@ -146,7 +147,7 @@ class WavePlus():
 # Class Sensor and sensor definitions
 # ===================================
 
-NUMBER_OF_SENSORS               = 7
+NUMBER_OF_SENSORS               = 8
 SENSOR_IDX_HUMIDITY             = 0
 SENSOR_IDX_RADON_SHORT_TERM_AVG = 1
 SENSOR_IDX_RADON_LONG_TERM_AVG  = 2
@@ -154,12 +155,13 @@ SENSOR_IDX_TEMPERATURE          = 3
 SENSOR_IDX_REL_ATM_PRESSURE     = 4
 SENSOR_IDX_CO2_LVL              = 5
 SENSOR_IDX_VOC_LVL              = 6
+SENSOR_IDX_BATTERY              = 7
 
 class Sensors():
     def __init__(self):
         self.sensor_version = None
         self.sensor_data    = [None]*NUMBER_OF_SENSORS
-        self.sensor_units   = ["%", "Bq/m3", "Bq/m3", "degC", "hPa", "ppm", "ppb"]
+        self.sensor_units   = ["%", "Bq/m3", "Bq/m3", "degC", "hPa", "ppm", "ppb", "%"]
     
     def set(self, rawData):
         self.sensor_version = rawData[0]
@@ -171,6 +173,7 @@ class Sensors():
             self.sensor_data[SENSOR_IDX_REL_ATM_PRESSURE]     = rawData[7]/50.0
             self.sensor_data[SENSOR_IDX_CO2_LVL]              = rawData[8]*1.0
             self.sensor_data[SENSOR_IDX_VOC_LVL]              = rawData[9]*1.0
+            self.sensor_data[SENSOR_IDX_BATTERY]              = rawData[17]/1000.0
         else:
             raise NameError("VERSION ERROR: Unknown sensor version.\n")
    
@@ -226,6 +229,7 @@ def main(SerialNumber):
                 pressure     = str(sensors.getValue(SENSOR_IDX_REL_ATM_PRESSURE))
                 CO2_lvl      = str(sensors.getValue(SENSOR_IDX_CO2_LVL))
                 VOC_lvl      = str(sensors.getValue(SENSOR_IDX_VOC_LVL))
+                battery      = str(sensors.getValue(SENSOR_IDX_BATTERY))
 
                 data = {
                     "timestamp": [date.strftime('%Y-%m-%d %H:%M:%S')],
@@ -235,7 +239,8 @@ def main(SerialNumber):
                     "temperature": [temperature],
                     "pressure": [pressure],
                     "co2": [CO2_lvl],
-                    "voc": [VOC_lvl]
+                    "voc": [VOC_lvl],
+                    "battery": [battery]
                     }
             except NameError as e:
                 log.warning(e)
